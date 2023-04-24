@@ -1,0 +1,11 @@
+INSERT INTO movies_live VALUES (NULL, 'The Shawshank Redemption', 'Frank Darabont', 1994, 5, 'One of the best prison movies ever made.');
+INSERT INTO movies_live VALUES (NULL, 'The Godfather', 'Francis Ford Coppola', 1972, 5, 'A classic crime drama.');
+INSERT INTO movies_live VALUES (NULL, 'The Dark Knight', 'Christopher Nolan', 2008, 5, 'One of the best superhero movies ever made.');
+INSERT INTO movies_live VALUES (NULL, 'Forrest Gump', 'Robert Zemeckis', 1994, 4, 'Life is like a box of chocolates.');
+INSERT INTO movies_live VALUES (NULL, 'Inception', 'Christopher Nolan', 2010, 5, 'A mind-bending thriller.');
+INSERT INTO movies_live VALUES (NULL, 'The Matrix', 'The Wachowskis', 1999, 5, 'A groundbreaking sci-fi action movie.');
+INSERT INTO movies_live VALUES (NULL, 'The Silence of the Lambs', 'Jonathan Demme', 1991, 5, 'A gripping psychological thriller.');
+INSERT INTO movies_live VALUES (NULL, 'Pulp Fiction', 'Quentin Tarantino', 1994, 5, 'A stylish and violent crime movie.');
+INSERT INTO movies_live VALUES (NULL, 'The Lord of the Rings: The Fellowship of the Ring', 'Peter Jackson', 2001, 5, 'The first epic chapter of a fantasy trilogy.');
+INSERT INTO movies_live VALUES (NULL, 'Goodfellas', 'Martin Scorsese', 1990, 5, 'Another classic crime drama.');
+INSERT INTO movies_live VALUES (NULL, 'The Dark Knight', 'Christopher Nolan', 2008, 5, 'One of the best superhero movies ever made.');
