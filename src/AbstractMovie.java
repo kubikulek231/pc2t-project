@@ -13,7 +13,6 @@ public abstract class AbstractMovie {
 		Director = director;
 		Year = year;
 		Review = review;
-		MovieState = State.UNEDITED;
 	}
 	
 	public void SetId(int id) {Id = id;}
@@ -28,15 +27,7 @@ public abstract class AbstractMovie {
 	public int GetYear() {return Year;}
 	public char GetReview() {return Review;}
 	
-	public State MovieState;
-	
-    public enum State {
-    	UNEDITED,
-    	EDITED,
-    	DELETED,
-    	NEW,
-    }
-    
+
     @Override
     public String toString() {
         return  "Id: " + Id +
