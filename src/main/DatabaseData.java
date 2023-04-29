@@ -8,10 +8,14 @@ public class DatabaseData {
 	private ArrayList<MovieAnimated> moviesAnimated = null;
 	private ArrayList<MovieLive> moviesLive = null;
 	
-	public DatabaseData() {
-		
-	}
+	public DatabaseData() {}
 	
+    public ArrayList<ArrayList<Performer>> getAnimators() {return Animators;}
+    public ArrayList<ArrayList<Performer>> getActors() {return Actors;}
+    public ArrayList<MovieAnimated> getMoviesAnimated() {return moviesAnimated;}
+    public ArrayList<MovieLive> getMoviesLive() {return moviesLive;}
+    
+    
 	public void loadData() {
 		try (DatabaseHandler databaseHandler = new DatabaseHandler()) {
 			databaseHandler.connect();
@@ -20,12 +24,20 @@ public class DatabaseData {
 			Animators = databaseHandler.loadAnimatorsMoviesAnimated();
 			Actors = databaseHandler.loadActorsMoviesLive();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println("an error occeured while loading data: " + e.getMessage());
 		}
 	}
 	
 	public void saveData() {
-		
+		try (DatabaseHandler databaseHandler = new DatabaseHandler()) {
+			databaseHandler.connect();
+			databaseHandler.saveMoviesLive(moviesLive);
+			databaseHandler.saveMoviesAnimated(moviesAnimated);
+			databaseHandler.saveActorsMoviesLive(Actors);
+			databaseHandler.saveAnimatorsMoviesAnimated(Animators);
+		} catch (Exception e) {
+			System.out.println("an error occeured while saving data: " + e.getMessage());
+		}
 	}
 	
 	@Override

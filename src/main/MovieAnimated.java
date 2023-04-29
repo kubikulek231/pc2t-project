@@ -13,8 +13,16 @@ public class MovieAnimated extends AbstractMovie{
 	public int getRating() {return Rating;}
 	public int getAge() {return Age;}
 	
-	public void setRating(int rating) {Rating = rating;}
-	public void setAge(int age) {Age = age;}
+	public boolean setRating(int rating) {
+		if (rating < 0 || rating > 10) {return false;}
+		Rating = rating;
+		return true;
+		}
+	public boolean setAge(int age) {
+		if (age < 0 || age > 99) {return false;}
+		Age = age;
+		return true;
+		}
 	
 	@Override
     public String toString() {

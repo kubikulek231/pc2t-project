@@ -10,11 +10,19 @@ public class Performer {
 		Surname = surname;
 	}
 	
-	public void SetName(String name) {Name = name;}
-	public void SetSurname(String surname) {Surname = surname;}
+	public boolean setName(String name) {
+		if (name.length() > 64 || name.length() < 1) {return false;}
+		Name = name;
+		return true;
+		}
+	public boolean setSurname(String surname) {
+		if (surname.length() > 64 || surname.length() < 1) {return false;}
+		Name = surname;
+		return true;
+	}
 	
-	public String GetName() {return Name;}
-	public String GetSurname() {return Surname;}
+	public String getName() {return Name;}
+	public String getSurname() {return Surname;}
 	
     
     @Override

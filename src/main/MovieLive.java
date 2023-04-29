@@ -9,8 +9,12 @@ public class MovieLive extends AbstractMovie{
 		Stars = stars;
 	}
 	
-	public int GetStars() {return Stars;}
-	public void setStars(int stars) {Stars = stars;}
+	public int getStars() {return Stars;}
+	public boolean setStars(int stars) {
+		if (stars < 0 || stars > 5) {return false;}
+		Stars = stars;
+		return true;
+	}
 	
 	
 	@Override
