@@ -16,10 +16,11 @@ public class MovieLive extends AbstractMovie{
 		return true;
 	}
 	
-	
 	@Override
-    public String toString() {
-        return super.toString() +
-                ", Stars: " + Stars;
-    }
+	public String toString() {
+	    StringBuilder sb = new StringBuilder(super.toString());
+	    sb.append(", Stars: ").append(Stars);
+	    return sb.toString();
+	}
+
 }

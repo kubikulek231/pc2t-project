@@ -24,10 +24,24 @@ public class Performer {
 	public String getName() {return Name;}
 	public String getSurname() {return Surname;}
 	
-    
     @Override
     public String toString() {
-        return  "Name: '" + Name + '\'' +
-                ", Surname: '" + Surname + '\'';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name: '").append(Name).append('\'')
+          .append(", Surname: '").append(Surname).append('\'');
+        return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof Performer)) {
+            return false;
+        }
+    	Performer performer = (Performer)obj;
+    	if (performer.getName().equals(getName()) &&
+    			performer.getSurname().equals(getSurname())) {
+    		return true;
+    	}
+    	return false;
     }
 }

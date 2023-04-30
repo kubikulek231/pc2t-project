@@ -25,10 +25,12 @@ public class MovieAnimated extends AbstractMovie{
 		}
 	
 	@Override
-    public String toString() {
-        return super.toString() +
-                ", Rating: " + Rating +
-                ", Age: " + Age;
-    }
+	public String toString() {
+	    StringBuilder sb = new StringBuilder(super.toString());
+	    sb.append(", Rating: ").append(Rating)
+	      .append(", Age: ").append(Age);
+	    return sb.toString();
+	}
+
 
 }

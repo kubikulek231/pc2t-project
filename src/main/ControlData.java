@@ -78,7 +78,7 @@ public class ControlData {
 		return true;
 	}
 	public boolean hasMovieAnyPerformers(AbstractMovie movie) {
-		if (movie.getClass() == MovieLive.class) {
+		if (movie instanceof MovieLive) {
 			ArrayList<Performer> performers = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
 			if (performers == null || performers.isEmpty()) {return false;}
 			return true;
@@ -89,7 +89,7 @@ public class ControlData {
 	}
 	
 	public boolean deleteMoviePerformers(AbstractMovie movie) {
-		if (movie.getClass() == MovieLive.class) {
+		if (movie instanceof MovieLive) {
 			ArrayList<Performer> performersToDelete = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
 			if (performersToDelete == null || performersToDelete.isEmpty()) {return false;}
 			performersToDelete.clear();

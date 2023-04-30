@@ -41,11 +41,13 @@ public abstract class AbstractMovie {
 	public String getReview() {return Review;}
 	
 
-    @Override
-    public String toString() {
-        return  "Name: '" + Name + '\'' +
-                ", Director: '" + Director + '\'' +
-                ", Year: " + Year +
-                ", Review: '" + Review + '\'';
-    }
+	public String toString() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("Name: '").append(Name).append("', ");
+	    sb.append("Director: '").append(Director).append("', ");
+	    sb.append("Year: ").append(Year).append(", ");
+	    sb.append("Review: '").append(Review).append("'");
+	    return sb.toString();
+	}
+
 }

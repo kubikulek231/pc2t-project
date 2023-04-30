@@ -55,7 +55,8 @@ public class App {
 						"3 ...... search for an actor\n" +
 						"4 ...... search for an animator\n" +
 						"5 ...... show all stored movies\n" +
-						"7 ...... show actors who starred in >1 movie\n" +
+						"6 ...... show actors who starred in >1 movie\n" +
+						"7 ...... show animators who starred in >1 movie\n" +
 						"8 ...... save and exit\n" +
 						"Enter a number: ");
 			}
@@ -94,8 +95,18 @@ public class App {
 		    	}
 		        break;
 		    case 6:
+		    	ArrayList<Performer> foundActors = searchForPerformersStarredInMoreThanOneMovie(true);
+		    	System.out.println((foundActors.size() > 0) ? "There are " + foundActors.size() + " actors who starred in more than one movie:" : "There are no such actors.");
+		    	for (Performer performer : foundActors) {
+		    		System.out.println(performer.getName() + " " + performer.getSurname());
+		    	}
 		        break;
 		    case 7:
+		    	ArrayList<Performer> foundAnimators = searchForPerformersStarredInMoreThanOneMovie(false);
+		    	System.out.println((foundAnimators.size() > 0) ? "There are " + foundAnimators.size() + " animators who starred in more than one movie:" : "There are no such animators.");
+		    	for (Performer performer : foundAnimators) {
+		    		System.out.println(performer.getName() + " " + performer.getSurname());
+		    	}
 		        break;
 		    case 8:
 		    	return;
@@ -104,6 +115,20 @@ public class App {
 		        break;
 			}
 		}
+	}
+	
+	private ArrayList<Performer> searchForPerformersStarredInMoreThanOneMovie(boolean performerType) {
+		ArrayList<Performer> foundPerformers = new ArrayList<Performer>();
+		var searchedPerformers = (performerType ? databaseData.getActors() : databaseData.getAnimators());
+    	for (ArrayList<Performer> performers : searchedPerformers) {
+    		for (var performer : performers) {
+    			if (foundPerformers.contains(performer)) {continue;}
+	    		if (controlData.actorStarrs(performer.getName(), performer.getSurname()).size() > 1) {
+	    			foundPerformers.add(performer);
+	    		}
+	    	}
+    	}
+    	return foundPerformers;
 	}
 	
 	private String getMoviePerformers(AbstractMovie movie, boolean oneDimension) {
@@ -245,7 +270,7 @@ public class App {
 	}
 	
 	private void addPerformer(AbstractMovie movie) {
-		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
+		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
 		boolean display = true;
 		boolean inputOk = false;
 		while (!inputOk) {
@@ -282,7 +307,7 @@ public class App {
 				}
 
 				if (inputOk) {
-					if (movie.getClass() == MovieLive.class) {
+					if (movie instanceof MovieLive) {
 						if (controlData.addMovieLiveActor(
 								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
 							System.out.println("New " + performerType + " added successfully.");
@@ -313,7 +338,7 @@ public class App {
 	}
 	
 	private void deletePerformer(AbstractMovie movie) {
-		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
+		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
 		boolean display = true;
 		boolean inputOk = false;
 		while (!inputOk) {
@@ -350,7 +375,7 @@ public class App {
 				}
 
 				if (inputOk) {
-					if (movie.getClass() == MovieLive.class) {
+					if (movie instanceof MovieLive) {
 						if (controlData.deleteMovieLiveActor(
 								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
 							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
@@ -628,8 +653,8 @@ public class App {
 	}
 	
 	private void movieSelected(AbstractMovie movie)  {
-		String performerType = ((movie.getClass() == MovieLive.class) ? "Actors" : "Animators");
-		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
+		String performerType = (movie instanceof MovieLive) ? "Actors" : "Animators";
+		String movieType = (movie instanceof MovieLive) ? "Live" : "Animated";
 		boolean display = true;
 		while (true) {
 			if (display) {
@@ -640,7 +665,7 @@ public class App {
 						"Director: " + movie.getDirector() + "\n" +
 						"Year: " + movie.getYear() + "\n" +
 						"Review: " + movie.getReview());
-				if (movie.getClass() == MovieLive.class) {
+				if (movie instanceof MovieLive) {
 					MovieLive movieLive = (MovieLive) movie;
 					System.out.println("Stars: " + movieLive.getStars());
 					System.out.println(getMoviePerformers(movie, false));
@@ -682,8 +707,8 @@ public class App {
 	}
 	
 	private void movieSelectedEditPerformers(AbstractMovie movie) {
-		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
-		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
+		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
+		String movieType = (movie instanceof MovieLive) ? "Live" : "Animated";
 		boolean display = true;
 		while (true) {
 			if (display) {
@@ -744,7 +769,7 @@ public class App {
 		boolean display = true;
 		while (true) {
 			if (display) {
-				String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
+				String movieType = (movie instanceof MovieLive) ? "Live" : "Animated";
 				System.out.println(
 						"< Editing selected " + movieType + " Movie >\n" +
 						"\n" +
@@ -752,7 +777,7 @@ public class App {
 						"Director: " + movie.getDirector() + "\n" +
 						"Year: " + movie.getYear() + "\n" +
 						"Review: " + movie.getReview());
-				if (movie.getClass() == MovieLive.class) {
+				if (movie instanceof MovieLive) {
 					MovieLive movieLive = (MovieLive) movie;
 					System.out.println("Stars: " + movieLive.getStars());
 				} else {
@@ -768,7 +793,7 @@ public class App {
 							"3 ...... Year\n" +
 							"4 ...... Review"
 							);
-				if (movie.getClass() == MovieLive.class) {
+				if (movie instanceof MovieLive) {
 					System.out.println("5 ...... Stars: ");
 				} else {
 					System.out.println(
@@ -779,7 +804,7 @@ public class App {
 			}
 			display = true;
 			int option = scanInt();
-			if (movie.getClass() == MovieLive.class && option == 6) {option = 7;}
+			if (movie instanceof MovieLive && option == 6) {option = 7;}
 			switch (option) {
 				case -1:
 					System.out.println("Input is not a number!");
@@ -845,10 +870,10 @@ public class App {
 			    	}
 			    	break;
 			    case 5:
-			    	String rateType = (movie.getClass() == MovieLive.class) ? "stars" : "rating";
+			    	String rateType = (movie instanceof MovieLive) ? "stars" : "rating";
 			    	System.out.println("Enter new " + rateType + ": ");
 			    	while (true) {
-			    		if (movie.getClass() == MovieLive.class) {
+			    		if (movie instanceof MovieLive) {
 			    			String newStars = scanner.nextLine();
 				    		if (parseInt(newStars) == -1) {
 								System.out.println("Invalid stars number");
@@ -901,7 +926,7 @@ public class App {
 	
 	private boolean movieDeleteSelected(AbstractMovie movie) {
 		while (true) {
-			String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
+			String movieType = (movie instanceof MovieLive) ? "Live" : "Animated";
 			System.out.println(
 					"< Deleting selected " + movieType + " Movie >\n" +
 					"\n" +
@@ -916,7 +941,7 @@ public class App {
 		        return false;
 		    case 1:
 		    	String name = movie.getName();
-		    	if (movie.getClass() == MovieLive.class) {
+		    	if (movie instanceof MovieLive) {
 		    		MovieLive liveMovie = (MovieLive)movie;
 		    		controlData.deleteMovieLive(liveMovie);
 		    	}
