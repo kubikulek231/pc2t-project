@@ -55,10 +55,8 @@ public class App {
 						"3 ...... search for an actor\n" +
 						"4 ...... search for an animator\n" +
 						"5 ...... show all stored movies\n" +
-						"6 ...... show all stored live movies\n" +
-						"7 ...... show all stored animated movies\n" +
-						"8 ...... show actors who starred in >1 movie\n" +
-						"9 ...... save and exit\n" +
+						"7 ...... show actors who starred in >1 movie\n" +
+						"8 ...... save and exit\n" +
 						"Enter a number: ");
 			}
 			display = true;
@@ -77,18 +75,29 @@ public class App {
 		    	searchMovieMenu();
 		        break;
 		    case 3:
+		    	searchPerformer(true);
 		        break;
 		    case 4:
+		    	searchPerformer(false);
 		        break;
 		    case 5:
+		    	System.out.println("< Listing of all movies stored in the database >");
+		    	System.out.println("Live movies:");
+		    	for (MovieLive movie : databaseData.getMoviesLive()) {
+		    		System.out.println(movie);
+		    		System.out.println(getMoviePerformers(movie, true));
+		    	}
+		    	System.out.println("Animated movies:");
+		    	for (MovieAnimated movie : databaseData.getMoviesAnimated()) {
+		    		System.out.println(movie);
+		    		System.out.println(getMoviePerformers(movie, true));
+		    	}
 		        break;
 		    case 6:
 		        break;
 		    case 7:
 		        break;
 		    case 8:
-		        break;
-		    case 9:
 		    	return;
 		    default:
 		        System.out.println("Invalid choice. Please try again.");
@@ -97,27 +106,27 @@ public class App {
 		}
 	}
 	
-	private String getMoviePerformers(AbstractMovie movie) {
-		String printString = ((movie.getClass() == MovieLive.class) ? "Actors:\n" : "Animators:\n");
-		ArrayList<Performer> performers;
-		if (movie.getClass() == MovieLive.class) {
-			MovieLive movieLive = (MovieLive)movie; 
-			performers = controlData.getMovieLiveActors(movieLive);
-		}
-		else {
-			MovieAnimated movieAnimated = (MovieAnimated)movie; 
-			performers = controlData.getMovieAnimatedAnimators(movieAnimated);
-		}
-		for (Performer performer : performers) {
-			printString = printString + performer.getName() + " " + performer.getSurname() + ",\n";
-		}
-		if (performers.size() > 0) {
-			printString = printString.substring(0, printString.length() - 2);
-		}
-		else {
-			printString = printString + "No performer added.";
-		}
-		return printString;
+	private String getMoviePerformers(AbstractMovie movie, boolean oneDimension) {
+		String separator = (oneDimension) ? " " : "\n";
+	    StringBuilder sb = new StringBuilder();
+	    sb.append((movie instanceof MovieLive) ? "Actors:" + separator : "Animators:" + separator);
+	    ArrayList<Performer> performers;
+	    if (movie instanceof MovieLive) {
+	        MovieLive movieLive = (MovieLive) movie;
+	        performers = controlData.getMovieLiveActors(movieLive);
+	    } else {
+	        MovieAnimated movieAnimated = (MovieAnimated) movie;
+	        performers = controlData.getMovieAnimatedAnimators(movieAnimated);
+	    }
+	    for (Performer performer : performers) {
+	        sb.append(performer.getName()).append(" ").append(performer.getSurname()).append(",").append(separator);
+	    }
+	    if (performers.size() > 0) {
+	        sb.delete(sb.length() - 2, sb.length());
+	    } else {
+	        sb.append("No performer added.");
+	    }
+	    return sb.toString();
 	}
 	
 	private void addMovieMenu() {
@@ -302,7 +311,6 @@ public class App {
 			}
 		}
 	}
-	
 	
 	private void deletePerformer(AbstractMovie movie) {
 		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
@@ -543,6 +551,82 @@ public class App {
 		}
 	}
 	
+	private void searchPerformer(boolean performerType) {
+		String performerTypeName = performerType ? "Actor" : "Animator";
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+			System.out.println(
+					"\n< Searching for an " + performerTypeName +" >\n" +
+					"Enter the " + performerTypeName + " in following format:\n" +
+					"Name ; Surname\n" +
+					"Use ';' to separate it's atributes.\n" +
+					"Enter '.' to return."
+					);
+			}
+			display = true;
+			String[] performerInput = scanner.nextLine().split(";");
+			if (performerInput.length > 0) {
+				if (performerInput[0].strip().length() > 0) {
+					if (performerInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (performerInput.length >= 2) {
+				String performerName = performerInput[0].strip();
+				String performerSurname = performerInput[1].strip();
+				
+				inputOk = true;
+				
+				if (performerName.length() < 1 || performerName.length() > 64) {
+					System.out.println(performerTypeName + "'s name length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+				
+				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
+					System.out.println(performerTypeName + "'s surname length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+
+				if (inputOk) {
+					if (performerType) {
+						ArrayList<MovieLive> resultingMovies = controlData.actorStarrs(performerName, performerSurname);
+							if (resultingMovies.isEmpty() || resultingMovies == null) {
+								System.out.println("Could not find any movies where " + performerTypeName + " '"+ performerName +
+										" " + performerSurname + "' starred in.\n");
+							}
+						else {
+							System.out.println("Found "+ resultingMovies.size() + " movies where "+ performerTypeName +" '"+ performerName +
+									" " + performerSurname + "' starred in:");
+							for (MovieLive movie : resultingMovies) {
+								System.out.println(movie.getName());
+							}
+						}
+					}
+					else {
+						ArrayList<MovieAnimated> resultingMovies = controlData.animatorStarrs(performerName, performerSurname);
+						if (resultingMovies.isEmpty() || resultingMovies == null) {
+							System.out.println("Could not find any movies where " + performerTypeName + " '"+ performerName +
+									" " + performerSurname + "' starred in.\n");
+						}
+						else {
+							System.out.println("Found "+ resultingMovies.size() + " movies where "+ performerTypeName +" '"+ performerName +
+									" " + performerSurname + "' starred in:");
+							for (MovieAnimated movie : resultingMovies) {
+								System.out.println(movie.getName());
+							}
+						}
+					}
+						
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+				display = false;
+			}
+		}
+	}
+	
 	private void movieSelected(AbstractMovie movie)  {
 		String performerType = ((movie.getClass() == MovieLive.class) ? "Actors" : "Animators");
 		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
@@ -559,13 +643,13 @@ public class App {
 				if (movie.getClass() == MovieLive.class) {
 					MovieLive movieLive = (MovieLive) movie;
 					System.out.println("Stars: " + movieLive.getStars());
-					System.out.println(getMoviePerformers(movie));
+					System.out.println(getMoviePerformers(movie, false));
 				} else {
 					MovieAnimated movieAnimated = (MovieAnimated) movie;
 					System.out.println(
 							"Rating: " + movieAnimated.getRating() + "\n" +
 							"Age: " + movieAnimated.getAge());
-					System.out.println(getMoviePerformers(movie));
+					System.out.println(getMoviePerformers(movie, false));
 				}
 				System.out.println(
 							"\n1 ...... Edit selected movie\n" +
@@ -597,7 +681,6 @@ public class App {
 		}
 	}
 	
-	
 	private void movieSelectedEditPerformers(AbstractMovie movie) {
 		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
 		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
@@ -607,7 +690,7 @@ public class App {
 				System.out.println(
 						"\n< Editing selected " + movieType + " movie's " + performerType + "s" + " >\n" +
 						"Name: " + movie.getName() + "\n");
-				System.out.println(getMoviePerformers(movie));
+				System.out.println(getMoviePerformers(movie, false));
 				System.out.println(
 						"1 ...... Add a new " + performerType + " \n" +
 						"2 ...... Delete " + performerType + " \n" +
