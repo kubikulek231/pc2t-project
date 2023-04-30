@@ -1,5 +1,7 @@
 package main;
 import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class App {
@@ -616,10 +618,10 @@ public class App {
 				if (inputOk) {
 					if (performerType) {
 						ArrayList<MovieLive> resultingMovies = controlData.actorStarrs(performerName, performerSurname);
-							if (resultingMovies.isEmpty() || resultingMovies == null) {
+						if (resultingMovies == null || resultingMovies.isEmpty()) {
 								System.out.println("Could not find any movies where " + performerTypeName + " '"+ performerName +
 										" " + performerSurname + "' starred in.\n");
-							}
+						}
 						else {
 							System.out.println("Found "+ resultingMovies.size() + " movies where "+ performerTypeName +" '"+ performerName +
 									" " + performerSurname + "' starred in:");
@@ -630,7 +632,7 @@ public class App {
 					}
 					else {
 						ArrayList<MovieAnimated> resultingMovies = controlData.animatorStarrs(performerName, performerSurname);
-						if (resultingMovies.isEmpty() || resultingMovies == null) {
+						if (resultingMovies == null || resultingMovies.isEmpty()) {
 							System.out.println("Could not find any movies where " + performerTypeName + " '"+ performerName +
 									" " + performerSurname + "' starred in.\n");
 						}
@@ -641,8 +643,7 @@ public class App {
 								System.out.println(movie.getName());
 							}
 						}
-					}
-						
+					}	
 				}
 			}
 			else {
@@ -680,6 +681,7 @@ public class App {
 							"\n1 ...... Edit selected movie\n" +
 							"2 ...... Edit selected movie's " + performerType + " \n" +
 							"3 ...... Delete selected movie\n" +
+							"4 ...... Save to a file\n" +
 							"0 ...... Return");
 			}
 			display = true;
@@ -699,12 +701,56 @@ public class App {
 			    case 3:
 			    	if (movieDeleteSelected(movie)) {return; }
 			    	return;
+			    case 4:
+			    	if (saveMovie(movie)) {return; }
+			    	break;
 			    default:
 			        System.out.println("Invalid choice. Please try again.");
 			        break;
 			}
 		}
 	}
+
+	public boolean saveMovie(AbstractMovie movie) {
+		boolean success = true;
+		String extension = (movie instanceof MovieLive) ? ".mvl" : ".mva";
+	    StringBuilder movieDetails = new StringBuilder();
+	    StringBuilder performers = new StringBuilder();
+	    String path = movie.getName().replaceAll("[\\\\/:*?\"<>|]", "_") + extension;
+	    ArrayList<Performer> moviePerformers;
+	    movieDetails.append(movie.getName()).append(";")
+	        .append(movie.getDirector()).append(";")
+	        .append(movie.getYear()).append(";")
+	        .append(movie.getReview()).append(";");
+	    if (movie instanceof MovieLive) {
+	        MovieLive movieLive = (MovieLive) movie;
+	        movieDetails.append(movieLive.getStars());
+	        moviePerformers = controlData.getMovieLiveActors((MovieLive)movie);
+	    } else {
+	        MovieAnimated movieAnimated = (MovieAnimated) movie;
+	        movieDetails.append(movieAnimated.getRating()).append(";")
+	            .append(movieAnimated.getAge());
+	        moviePerformers = controlData.getMovieAnimatedAnimators((MovieAnimated)movie);
+	    }
+	    if (moviePerformers != null && !moviePerformers.isEmpty()) {
+	    	for (var performer : moviePerformers) {
+	    		performers.append(performer.getName()).append(";").append(performer.getSurname()).append("\n");
+	    	}
+	    }
+	    try {
+	        FileWriter writer = new FileWriter(path);
+	        writer.write(movieDetails.append("\n").append(performers).toString());
+	        writer.close();
+	        System.out.println("Successfully saved the movie to a file.");
+	        System.out.println("Path: " + path);
+	      } catch (IOException e) {
+	        System.out.println("Could not save the movie.");
+	        e.printStackTrace();
+	        success = false;
+	      }
+	    return success;
+	}
+
 	
 	private void movieSelectedEditPerformers(AbstractMovie movie) {
 		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");

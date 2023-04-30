@@ -137,29 +137,34 @@ public class ControlData {
     	return databaseData.getAnimators().get(index);
     }
     
-	public ArrayList<MovieAnimated> animatorStarrs(String name, String surname) {
-		ArrayList<MovieAnimated> returnList = new ArrayList<MovieAnimated>();
-		for (ArrayList<Performer> actors : databaseData.getAnimators()) {
-			for (Performer actor : actors) {
-				if (actor.getName().equals(name) && actor.getSurname().equals(surname)) {
-					returnList.add(databaseData.getMoviesAnimated().get(databaseData.getAnimators().indexOf(actors)));
-				}
-			}
-    		
-		}
-		return returnList;
-	}
-	
-	public ArrayList<MovieLive> actorStarrs(String name, String surname) {
-		ArrayList<MovieLive> returnList = new ArrayList<MovieLive>();
-		for (ArrayList<Performer> actors : databaseData.getActors()) {
-			for (Performer actor : actors) {
-				if (actor.getName().equals(name) && actor.getSurname().equals(surname)) {
-					returnList.add(databaseData.getMoviesLive().get(databaseData.getActors().indexOf(actors)));
-				}
-			}
-    		
-		}
-		return returnList;
-	}
+    public ArrayList<MovieAnimated> animatorStarrs(String name, String surname) {
+        ArrayList<MovieAnimated> returnList = new ArrayList<MovieAnimated>();
+        ArrayList<ArrayList<Performer>> animators = databaseData.getAnimators();
+        for (int i = 0; i < animators.size(); i++) {
+            ArrayList<Performer> actors = animators.get(i);
+            for (int j = 0; j < actors.size(); j++) {
+                Performer actor = actors.get(j);
+                if (actor.getName().equals(name) && actor.getSurname().equals(surname)) {
+                    returnList.add(databaseData.getMoviesAnimated().get(i));
+                }
+            }
+        }
+        return returnList;
+    }
+
+    public ArrayList<MovieLive> actorStarrs(String name, String surname) {
+        ArrayList<MovieLive> returnList = new ArrayList<MovieLive>();
+        ArrayList<ArrayList<Performer>> actorsList = databaseData.getActors();
+        for (int i = 0; i < actorsList.size(); i++) {
+            ArrayList<Performer> actors = actorsList.get(i);
+            for (int j = 0; j < actors.size(); j++) {
+                Performer actor = actors.get(j);
+                if (actor.getName().equals(name) && actor.getSurname().equals(surname)) {
+                    returnList.add(databaseData.getMoviesLive().get(i));
+                }
+            }
+        }
+        return returnList;
+    }
+
 }
