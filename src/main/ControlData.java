@@ -64,6 +64,43 @@ public class ControlData {
 		return true;
 	}
 	
+	public boolean deleteMovieLiveActor(int movieIndex, String name, String surname) {
+		Performer performerToDelete = findPerformer(databaseData.getActors().get(movieIndex), name, surname);
+		if (performerToDelete == null) {return false;}
+		databaseData.getActors().get(movieIndex).remove(performerToDelete);
+		return true;
+	}
+	
+	public boolean deleteMovieAnimatedAnimator(int movieIndex, String name, String surname) {
+		Performer performerToDelete = findPerformer(databaseData.getAnimators().get(movieIndex), name, surname);
+		if (performerToDelete == null) {return false;}
+		databaseData.getAnimators().get(movieIndex).remove(performerToDelete);
+		return true;
+	}
+	public boolean hasMovieAnyPerformers(AbstractMovie movie) {
+		if (movie.getClass() == MovieLive.class) {
+			ArrayList<Performer> performers = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
+			if (performers == null || performers.isEmpty()) {return false;}
+			return true;
+		}
+		ArrayList<Performer> performers = databaseData.getAnimators().get(getMovieAnimatedIndex((MovieAnimated)movie));
+		if (performers == null || performers.isEmpty()) {return false;}
+		return true;
+	}
+	
+	public boolean deleteMoviePerformers(AbstractMovie movie) {
+		if (movie.getClass() == MovieLive.class) {
+			ArrayList<Performer> performersToDelete = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
+			if (performersToDelete == null || performersToDelete.isEmpty()) {return false;}
+			performersToDelete.clear();
+			return true;
+		}
+		ArrayList<Performer> performersToDelete = databaseData.getAnimators().get(getMovieAnimatedIndex((MovieAnimated)movie));
+		if (performersToDelete == null || performersToDelete.isEmpty()) {return false;}
+		performersToDelete.clear();
+		return true;
+	}
+	
 	public boolean addMovieAnimatedAnimator(int movieIndex, String name, String surname) {
 		if (findPerformer(databaseData.getAnimators().get(movieIndex), name, surname) != null) {return false;}
 		databaseData.getAnimators().get(movieIndex).add(new Performer(name, surname));

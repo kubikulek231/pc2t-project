@@ -3,7 +3,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -168,7 +167,7 @@ public class DatabaseHandler implements AutoCloseable{
     	String query = "INSERT INTO actors "
 				+ "(act_name, act_surname, act_movie_id) VALUES (?, ?, ?)";
     	int movieId = 1;
-    	for (List<Performer> singleMovieActors : actorsMoviesLive) {
+    	for (ArrayList<Performer> singleMovieActors : actorsMoviesLive) {
     		if (singleMovieActors == null) {continue;}
     		for (Performer actor : singleMovieActors) {
 	    		try (PreparedStatement preparedStatement = aliveConnection.prepareStatement(query)) {
@@ -194,7 +193,7 @@ public class DatabaseHandler implements AutoCloseable{
     	String query = "INSERT INTO animators "
 				+ "(act_name, act_surname, act_movie_id) VALUES (?, ?, ?)";
     	int movieId = 1;
-    	for (List<Performer> singleMovieAnimators : animatorsMoviesAnimated) {
+    	for (ArrayList<Performer> singleMovieAnimators : animatorsMoviesAnimated) {
     		if (singleMovieAnimators == null) {continue;}
     		for (Performer animator : singleMovieAnimators) {
 	    		try (PreparedStatement preparedStatement = aliveConnection.prepareStatement(query)) {

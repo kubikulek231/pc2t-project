@@ -1,4 +1,5 @@
 package main;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
@@ -51,11 +52,11 @@ public class App {
 						"\n< Movie Database App >\n" +
 						"1 ...... add a new movie\n" +
 						"2 ...... search for a movie\n" +
-						"3 ...... search for a performer\n" +
+						"3 ...... search for an actor\n" +
 						"4 ...... search for an animator\n" +
-						"5 ...... show all movies\n" +
-						"6 ...... show all live movies\n" +
-						"7 ...... show all animated movies\n" +
+						"5 ...... show all stored movies\n" +
+						"6 ...... show all stored live movies\n" +
+						"7 ...... show all stored animated movies\n" +
 						"8 ...... show actors who starred in >1 movie\n" +
 						"9 ...... save and exit\n" +
 						"Enter a number: ");
@@ -96,7 +97,28 @@ public class App {
 		}
 	}
 	
-
+	private String getMoviePerformers(AbstractMovie movie) {
+		String printString = ((movie.getClass() == MovieLive.class) ? "Actors:\n" : "Animators:\n");
+		ArrayList<Performer> performers;
+		if (movie.getClass() == MovieLive.class) {
+			MovieLive movieLive = (MovieLive)movie; 
+			performers = controlData.getMovieLiveActors(movieLive);
+		}
+		else {
+			MovieAnimated movieAnimated = (MovieAnimated)movie; 
+			performers = controlData.getMovieAnimatedAnimators(movieAnimated);
+		}
+		for (Performer performer : performers) {
+			printString = printString + performer.getName() + " " + performer.getSurname() + ",\n";
+		}
+		if (performers.size() > 0) {
+			printString = printString.substring(0, printString.length() - 2);
+		}
+		else {
+			printString = printString + "No performer added.";
+		}
+		return printString;
+	}
 	
 	private void addMovieMenu() {
 		boolean display = true;
@@ -209,6 +231,142 @@ public class App {
 			}
 			else {
 				System.out.println("Invalid input. Please try again.");
+			}
+		}
+	}
+	
+	private void addPerformer(AbstractMovie movie) {
+		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+			System.out.println(
+					"\n< Adding a new " + performerType +" >\n" +
+					"Enter the " + performerType + " in following format:\n" +
+					"Name ; Surname\n" +
+					"Use ';' to separate it's atributes.\n" +
+					"Enter '.' to return."
+					);
+			}
+			display = true;
+			String[] performerInput = scanner.nextLine().split(";");
+			if (performerInput.length > 0) {
+				if (performerInput[0].strip().length() > 0) {
+					if (performerInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (performerInput.length >= 2) {
+				String performerName = performerInput[0].strip();
+				String performerSurname = performerInput[1].strip();
+				
+				inputOk = true;
+				
+				if (performerName.length() < 1 || performerName.length() > 64) {
+					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+				
+				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
+					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+
+				if (inputOk) {
+					if (movie.getClass() == MovieLive.class) {
+						if (controlData.addMovieLiveActor(
+								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
+							System.out.println("New " + performerType + " added successfully.");
+						}
+						else {
+							System.out.println("Could not add a new  "+ performerType +".\n" +
+									"They are already added.");
+						}
+					}
+					else {
+						if (controlData.addMovieAnimatedAnimator(
+								controlData.getMovieAnimatedIndex((MovieAnimated)movie), performerName, performerSurname)) {
+							System.out.println("New " + performerType + " added successfully.");
+						}
+						else {
+							System.out.println("Could not add a new  "+ performerType +".\n" +
+									"They are already added.");
+						}
+					}
+						
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+				display = false;
+			}
+		}
+	}
+	
+	
+	private void deletePerformer(AbstractMovie movie) {
+		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+			System.out.println(
+					"\n< Deleting " + performerType +" >\n" +
+					"Enter the " + performerType + " in following format:\n" +
+					"Name ; Surname\n" +
+					"Use ';' to separate it's atributes.\n" +
+					"Enter '.' to return."
+					);
+			}
+			display = true;
+			String[] performerInput = scanner.nextLine().split(";");
+			if (performerInput.length > 0) {
+				if (performerInput[0].strip().length() > 0) {
+					if (performerInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (performerInput.length >= 2) {
+				String performerName = performerInput[0].strip();
+				String performerSurname = performerInput[1].strip();
+				
+				inputOk = true;
+				
+				if (performerName.length() < 1 || performerName.length() > 64) {
+					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+				
+				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
+					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+
+				if (inputOk) {
+					if (movie.getClass() == MovieLive.class) {
+						if (controlData.deleteMovieLiveActor(
+								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
+							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
+						}
+						else {
+							System.out.println("Could not delete "+ performerType +".\n" +
+									"They are not added.");
+						}
+					}
+					else {
+						if (controlData.addMovieAnimatedAnimator(
+								controlData.getMovieAnimatedIndex((MovieAnimated)movie), performerName, performerSurname)) {
+							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
+						}
+						else {
+							System.out.println("Could not delete "+ performerType +".\n" +
+									"They are not added.");
+						}
+					}	
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+				display = false;
 			}
 		}
 	}
@@ -386,10 +544,11 @@ public class App {
 	}
 	
 	private void movieSelected(AbstractMovie movie)  {
+		String performerType = ((movie.getClass() == MovieLive.class) ? "Actors" : "Animators");
+		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
 		boolean display = true;
 		while (true) {
 			if (display) {
-				String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
 				System.out.println(
 						"< < " + movieType + " Movie Selected >\n" +
 						"\n" +
@@ -400,15 +559,18 @@ public class App {
 				if (movie.getClass() == MovieLive.class) {
 					MovieLive movieLive = (MovieLive) movie;
 					System.out.println("Stars: " + movieLive.getStars());
+					System.out.println(getMoviePerformers(movie));
 				} else {
 					MovieAnimated movieAnimated = (MovieAnimated) movie;
 					System.out.println(
 							"Rating: " + movieAnimated.getRating() + "\n" +
 							"Age: " + movieAnimated.getAge());
+					System.out.println(getMoviePerformers(movie));
 				}
 				System.out.println(
 							"\n1 ...... Edit selected movie\n" +
-							"2 ...... Delete selected movie\n" +
+							"2 ...... Edit selected movie's " + performerType + " \n" +
+							"3 ...... Delete selected movie\n" +
 							"0 ...... Return");
 			}
 			display = true;
@@ -419,12 +581,15 @@ public class App {
 			        break;
 				case 0:
 			        return;
-			    case 1:
-			    	movieEditSelected(movie);
-			    	break;
+				case 1:
+					movieSelectedEdit(movie);
+			        break;
 			    case 2:
-			    	if (movieDeleteSelected(movie)) {return; }
+			    	movieSelectedEditPerformers(movie);
 			    	break;
+			    case 3:
+			    	if (movieDeleteSelected(movie)) {return; }
+			    	return;
 			    default:
 			        System.out.println("Invalid choice. Please try again.");
 			        break;
@@ -432,13 +597,73 @@ public class App {
 		}
 	}
 	
-	private void movieEditSelected(AbstractMovie movie)  {
+	
+	private void movieSelectedEditPerformers(AbstractMovie movie) {
+		String performerType = ((movie.getClass() == MovieLive.class) ? "Actor" : "Animator");
+		String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
+		boolean display = true;
+		while (true) {
+			if (display) {
+				System.out.println(
+						"\n< Editing selected " + movieType + " movie's " + performerType + "s" + " >\n" +
+						"Name: " + movie.getName() + "\n");
+				System.out.println(getMoviePerformers(movie));
+				System.out.println(
+						"1 ...... Add a new " + performerType + " \n" +
+						"2 ...... Delete " + performerType + " \n" +
+						"3 ...... Delete all " + performerType + "s \n" +
+						"0 ...... Return \n"
+						);
+			}
+		int option = scanInt();
+		switch (option) {
+			case -1:
+				System.out.println("Input is not a number!");
+				display = false;
+		        break;
+			case 0:
+		        return;
+		    case 1:
+		    	addPerformer(movie);	
+		    	break;
+		    case 2:
+		    	if (controlData.hasMovieAnyPerformers(movie)) {
+		    		deletePerformer(movie);
+		    	}
+		    	else {
+		    		System.out.println("Movie has no " + performerType + "s added." );
+		    		display = false;
+		    	}
+		    	break;
+		    case 3:
+		    	if (controlData.hasMovieAnyPerformers(movie)) {
+		    		System.out.println("Delete all this movie's " + performerType + "s (y/n)?" );
+		    		if (scanYN() == 1) {
+		    			if (controlData.deleteMoviePerformers(movie)) {
+		    				System.out.println("All " + performerType + "s succesfuly deleted.");
+		    			}
+		    		}
+		    	}
+		    	else {
+		    		System.out.println("Movie has no " + performerType + "s added." );
+		    		display = false;
+		    	}
+		    	break;
+		    default:
+		        System.out.println("Invalid choice. Please try again.");
+		        display = false;
+		        break;
+			}
+		}
+	}
+	
+	private void movieSelectedEdit(AbstractMovie movie)  {
 		boolean display = true;
 		while (true) {
 			if (display) {
 				String movieType = (movie.getClass() == MovieLive.class) ? "Live" : "Animated";
 				System.out.println(
-						"< < Editing selected " + movieType + " Movie >\n" +
+						"< Editing selected " + movieType + " Movie >\n" +
 						"\n" +
 						"Name: " + movie.getName() + "\n" +
 						"Director: " + movie.getDirector() + "\n" +
