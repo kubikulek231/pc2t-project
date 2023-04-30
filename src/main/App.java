@@ -1,6 +1,8 @@
 package main;
 import java.util.ArrayList;
 import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -164,6 +166,7 @@ public class App {
 					"\n< Add a new movie >\n" +
 					"1 ...... Live movie\n" +
 					"2 ...... Animated movie\n" +
+					"3 ...... Load from a file\n" +
 					"0 ...... Back");
 			}
 			display = true;
@@ -179,6 +182,19 @@ public class App {
 			    	break;
 			    case 2:
 			    	addMovieAnimated();
+			    	break;
+			    case 3:
+			    	System.out.println("Enter local file path: ");
+			    	while (true) {
+			    		String path = scanner.nextLine();
+			    		if (!path.contains(".mvl") && !path.contains(".mva")) {
+							System.out.println("You have to specify movie file extension!");
+						}
+			    		else {
+			    			loadMovie(path);
+			    			break; 
+		    			}
+			    	}
 			    	break;
 			    default:
 			        System.out.println("Invalid choice. Please try again.");
@@ -750,8 +766,52 @@ public class App {
 	      }
 	    return success;
 	}
-
 	
+	public void loadMovie(String fileName) {
+	    try {
+	        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+	        String movieDetailsLine = reader.readLine();
+	        String[] movieDetails = movieDetailsLine.split(";");
+	        String movieName = movieDetails[0];
+	        String movieDirector = movieDetails[1];
+	        String movieReview = movieDetails[3];
+	        int movieYear = Integer.parseInt(movieDetails[2]);
+
+	        if (fileName.endsWith(".mvl")) {
+	            int movieStars = Integer.parseInt(movieDetails[4]);
+	            ArrayList<Performer> movieLiveActors = new ArrayList<>();
+	            String actorLine;
+	            while ((actorLine = reader.readLine()) != null) {
+	                String[] actorDetails = actorLine.split(";");
+	                String actorName = actorDetails[0];
+	                String actorSurname = actorDetails[1];
+	                movieLiveActors.add(new Performer(actorName, actorSurname));
+	            }
+	            databaseData.getActors().add(movieLiveActors);
+	            controlData.addMovieLive(movieName, movieDirector, movieYear, movieReview, movieStars);
+	        } else if (fileName.endsWith(".mva")) {
+	            int movieRating = Integer.parseInt(movieDetails[4]);
+	            int movieAge = Integer.parseInt(movieDetails[5]);
+	            ArrayList<Performer> movieAnimatedAnimators = new ArrayList<>();
+	            String animatorLine;
+	            while ((animatorLine = reader.readLine()) != null) {
+	                String[] animatorDetails = animatorLine.split(";");
+	                String animatorName = animatorDetails[0];
+	                String animatorSurname = animatorDetails[1];
+	                movieAnimatedAnimators.add(new Performer(animatorName, animatorSurname));
+	            }
+	            controlData.addMovieAnimated(movieName, movieDirector, movieYear, movieReview, movieRating, movieAge);
+	            databaseData.getAnimators().add(movieAnimatedAnimators);
+	        }
+
+	        reader.close();
+	        System.out.println("Successfully loaded movie '"+ movieName +"' from the file.");
+	    } catch (IOException e) {
+	        System.out.println("Could not load the movie.");
+	        e.printStackTrace();
+	    }
+	}
+
 	private void movieSelectedEditPerformers(AbstractMovie movie) {
 		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
 		String movieType = (movie instanceof MovieLive) ? "Live" : "Animated";
