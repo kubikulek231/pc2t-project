@@ -105,6 +105,7 @@ public class App {
 		    	for (Performer performer : foundActors) {
 		    		System.out.println(performer.getName() + " " + performer.getSurname());
 		    	}
+		    	display = false;
 		        break;
 		    case 7:
 		    	ArrayList<Performer> foundAnimators = searchForPerformersStarredInMoreThanOneMovie(false);
@@ -112,6 +113,7 @@ public class App {
 		    	for (Performer performer : foundAnimators) {
 		    		System.out.println(performer.getName() + " " + performer.getSurname());
 		    	}
+		    	display = false;
 		        break;
 		    case 8:
 		    	return;
@@ -651,7 +653,7 @@ public class App {
 			    	break;
 			    case 3:
 			    	if (movieDeleteSelected(movie)) {return; }
-			    	return;
+			    	break;
 			    case 4:
 			    	if (saveMovie(movie)) {return; }
 			    	break;
