@@ -281,6 +281,153 @@ public class App {
 		}
 	}
 	
+	private void addMovie(boolean movieType) {
+		String movieTypeName = movieType ? "Live" : "Animated";
+		boolean formatOk = false;
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+				System.out.println(
+						"\n< Adding a new " + movieTypeName + " movie >\n" +
+						"Enter the movie in following format:\n");
+				if (movieType) {
+					System.out.println(
+						"Name ; Director ; Year ; Review ; Stars");
+				}
+				else {
+					System.out.println(
+						"Name ; Director ; Year ; Review ; Rating ; Age");
+				}
+				System.out.println(
+						"Use ';' to separate it's atributes.\n" +
+						"Enter '.' to return.");
+			}
+			display = true;
+			String[] movieInput = scanner.nextLine().split(";");
+			if (movieInput.length > 0) {
+				if (movieInput[0].strip().length() > 0) {
+					if (movieInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (movieType) {
+				if (movieInput.length >= 5) {
+					formatOk = true;
+				}
+			}
+			else {
+				if (movieInput.length >= 6) {
+					formatOk = true;
+				}
+			}
+			if (formatOk) {
+				String movieName = movieInput[0].strip();
+				String movieDirector = movieInput[1].strip();
+				String movieYear = movieInput[2].strip();
+				String movieReview = movieInput[3].strip();
+				String movieStars = null;
+				String movieRating = null;
+				String movieAge = null;
+				if (movieType) {
+					movieStars = movieInput[4].strip();
+				}
+				else {
+					movieRating = movieInput[4].strip();
+					movieAge = movieInput[5].strip();
+				}
+
+				inputOk = true;
+				
+				if (movieName.length() < 1 || movieName.length() > 128) {
+					System.out.println("Movie name must be from 1 to 128 characters.");
+					inputOk = display = false;
+				}
+				if (movieDirector.length() < 3 || movieDirector.length() > 64) {
+					System.out.println("Director length must be from 1 to 128 characters.");
+					inputOk = display = false;
+				}
+				if (parseInt(movieYear) == -1) {
+					System.out.println("Invalid year number");
+					inputOk = display = false;
+				} else if (parseInt(movieYear) > 2100 || parseInt(movieYear) < 1800) {
+					System.out.println("Year can not go beyond 2100 or below 1800.");
+					inputOk = display = false;
+				}
+				if (movieReview.length() < 3 || movieReview.length() > 128) {
+					System.out.println("Review length must be from 3 to 128 characters.");
+					inputOk = display = false;
+				}
+				if (!movieType && parseInt(movieRating) == -1) {
+					System.out.println("Invalid rating number");
+					inputOk = display = false;
+				} else if (!movieType && parseInt(movieRating) > 10 || parseInt(movieRating) < 0) {
+					System.out.println("Rating can not go beyond 10 or below 0.");
+					inputOk = display = false;
+				}
+				if (!movieType && parseInt(movieAge) == -1) {
+					System.out.println("Invalid age number");
+					inputOk = display = false;
+				} else if (!movieType && parseInt(movieAge) > 99 || parseInt(movieAge) < 0) {
+					System.out.println("Age can not go beyond 99 or below 0.");
+					inputOk = display = false;
+				}
+				if (movieType && parseInt(movieStars) == -1) {
+					System.out.println("Invalid stars number");
+					inputOk = display = false;
+				} else if (movieType && parseInt(movieStars) > 5 || parseInt(movieStars) < 0) {
+					System.out.println("Stars can not go beyond 5 or below 0.");
+					inputOk = display = false;
+				}
+				if (inputOk) {
+					System.out.println(
+							"\n< Adding a new Live movie >\n" +
+							"Review the following details:\n" +
+							"Name: " + movieName + "\n" +
+							"Director: " + movieDirector + "\n" +
+							"Year: " + movieYear + "\n" +
+							"Review: " + movieReview
+							);
+					if (movieType) {
+						System.out.println(
+							"Stars: " + movieStars);
+					}
+					else {
+						System.out.println(
+							"Rating: " + movieRating + "\n" +
+							"Age: " + movieRating);
+					}
+					System.out.println("Add to database? (y/n)");
+					if (scanYN() == 1) {
+						if (movieType) {
+							if (controlData.addMovieAnimated(movieName, movieDirector, 
+									parseInt(movieYear), movieReview, parseInt(movieRating), parseInt(movieAge))) {
+								System.out.println(movieTypeName + " movie added successfully.");
+							}
+							else {
+								System.out.println("Could not add a new " + movieTypeName + " animated movie.\n" +
+										"It is already in the database.");
+							}
+						}
+						else {
+							if (controlData.addMovieAnimated(movieName, movieDirector, 
+									parseInt(movieYear), movieReview, parseInt(movieRating), parseInt(movieAge))) {
+								System.out.println(movieTypeName + " movie added successfully.");
+							}
+							else {
+								System.out.println("Could not add a new " + movieTypeName + " animated movie.\n" +
+										"It is already in the database.");
+							}
+						}
+					}
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+			}
+		}
+	}
+	
+	
 	private void addMovieAnimated() {
 		boolean display = true;
 		boolean inputOk = false;
