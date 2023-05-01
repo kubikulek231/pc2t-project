@@ -712,25 +712,27 @@ public class App {
 	        String movieName = movieDetails[0];
 	        String movieDirector = movieDetails[1];
 
-	        if (controlData.findMovieLive(movieName) == null) {
-	            int movieYear = Integer.parseInt(movieDetails[2]);
-	            String movieReview = movieDetails[3];
+            int movieYear = parseInt(movieDetails[2]);
+            String movieReview = movieDetails[3];
 
-	            if (fileName.endsWith(".mvl")) {
-	                int movieStars = Integer.parseInt(movieDetails[4]);
-	                ArrayList<Performer> movieLiveActors = loadActors(reader);
-	                controlData.addMovieLive(movieName, movieDirector, movieYear, movieReview, movieStars);
-	                databaseData.getActors().add(movieLiveActors);
-	            } else if (fileName.endsWith(".mva")) {
-	                int movieRating = Integer.parseInt(movieDetails[4]);
-	                int movieAge = Integer.parseInt(movieDetails[5]);
-	                ArrayList<Performer> movieAnimatedAnimators = loadAnimators(reader);
-	                controlData.addMovieAnimated(movieName, movieDirector, movieYear, movieReview, movieRating, movieAge);
-	                databaseData.getAnimators().add(movieAnimatedAnimators);
-	            }
-	        } else {
-	            alreadyAdded = true;
-	        }
+            if (fileName.endsWith(".mvl")) {
+            	alreadyAdded = (controlData.findMovieLive(movieName) != null);
+            	if (!alreadyAdded)  {
+            		int movieStars = parseInt(movieDetails[4]);
+                    ArrayList<Performer> movieLiveActors = loadActors(reader);
+                    controlData.addMovieLive(movieName, movieDirector, movieYear, movieReview, movieStars);
+                    databaseData.getActors().set(databaseData.getActors().size() - 1, movieLiveActors);
+            	}
+            } else if (fileName.endsWith(".mva")) {
+            	alreadyAdded = (controlData.findMovieAnimated(movieName) != null);
+            	if (!alreadyAdded) {
+            		int movieRating = parseInt(movieDetails[4]);
+                    int movieAge = parseInt(movieDetails[5]);
+                    ArrayList<Performer> movieAnimatedAnimators = loadAnimators(reader);
+                    controlData.addMovieAnimated(movieName, movieDirector, movieYear, movieReview, movieRating, movieAge);
+                    databaseData.getAnimators().set(databaseData.getAnimators().size() - 1, movieAnimatedAnimators);
+            	}
+            }
 
 	        reader.close();
 
