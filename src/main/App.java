@@ -184,6 +184,9 @@ public class App {
 			    	System.out.println("Enter local file path: ");
 			    	while (true) {
 			    		String path = scanner.nextLine();
+			    		if (path.strip().length() > 0 && path.charAt(0) == '.') {
+			    			break;
+			    		}
 			    		if (!path.contains(".mvl") && !path.contains(".mva")) {
 							System.out.println("You have to specify movie file extension!");
 						}
@@ -209,7 +212,7 @@ public class App {
 			if (display) {
 				System.out.println(
 						"\n< Adding a new " + movieTypeName + " movie >\n" +
-						"Enter the movie in following format:\n");
+						"Enter the movie in following format:");
 				if (movieType) {
 					System.out.println(
 						"Name ; Director ; Year ; Review ; Stars");
@@ -613,8 +616,7 @@ public class App {
 		while (true) {
 			if (display) {
 				System.out.println(
-						"< < " + movieType + " Movie Selected >\n" +
-						"\n" +
+						"< " + movieType + " Movie Selected >\n" +
 						"Name: " + movie.getName() + "\n" +
 						"Director: " + movie.getDirector() + "\n" +
 						"Year: " + movie.getYear() + "\n" +
@@ -778,7 +780,7 @@ public class App {
 			if (display) {
 				System.out.println(
 						"\n< Editing selected " + movieType + " movie's " + performerType + "s" + " >\n" +
-						"Name: " + movie.getName() + "\n");
+						"Name: " + movie.getName() + "");
 				System.out.println(getMoviePerformers(movie, false));
 				System.out.println(
 						"1 ...... Add a new " + performerType + " \n" +
