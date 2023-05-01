@@ -327,7 +327,7 @@ public class App {
 				if (inputOk) {
 					if (movie instanceof MovieLive) {
 						if (controlData.addMovieLiveActor(
-								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
+								controlData.getMovieIndex((MovieLive)movie), performerName, performerSurname)) {
 							System.out.println("New " + performerType + " added successfully.");
 						}
 						else {
@@ -337,7 +337,7 @@ public class App {
 					}
 					else {
 						if (controlData.addMovieAnimatedAnimator(
-								controlData.getMovieAnimatedIndex((MovieAnimated)movie), performerName, performerSurname)) {
+								controlData.getMovieIndex((MovieAnimated)movie), performerName, performerSurname)) {
 							System.out.println("New " + performerType + " added successfully.");
 						}
 						else {
@@ -395,7 +395,7 @@ public class App {
 				if (inputOk) {
 					if (movie instanceof MovieLive) {
 						if (controlData.deleteMovieLiveActor(
-								controlData.getMovieLiveIndex((MovieLive)movie), performerName, performerSurname)) {
+								controlData.getMovieIndex((MovieLive)movie), performerName, performerSurname)) {
 							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
 						}
 						else {
@@ -405,7 +405,7 @@ public class App {
 					}
 					else {
 						if (controlData.addMovieAnimatedAnimator(
-								controlData.getMovieAnimatedIndex((MovieAnimated)movie), performerName, performerSurname)) {
+								controlData.getMovieIndex((MovieAnimated)movie), performerName, performerSurname)) {
 							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
 						}
 						else {
@@ -468,20 +468,20 @@ public class App {
 					inputOk = display = false;
 				}
 				if (movieReview.length() < 3 || movieReview.length() > 128) {
-					System.out.println("Director length must be from 3 to 128 characters.");
+					System.out.println("Review length must be from 3 to 128 characters.");
 					inputOk = display = false;
 				}
 				if (parseInt(movieRating) == -1) {
-					System.out.println("Invalid stars number");
+					System.out.println("Invalid rating number");
 					inputOk = display = false;
 				} else if (parseInt(movieRating) > 10 || parseInt(movieRating) < 0) {
-					System.out.println("Stars can not go beyond 5 or below 0.");
+					System.out.println("Rating can not go beyond 10 or below 0.");
 					inputOk = display = false;
 				}
 				if (parseInt(movieAge) == -1) {
 					System.out.println("Invalid age number");
 					inputOk = display = false;
-				} else if (parseInt(movieAge) > 10 || parseInt(movieAge) < 0) {
+				} else if (parseInt(movieAge) > 99 || parseInt(movieAge) < 0) {
 					System.out.println("Age can not go beyond 99 or below 0.");
 					inputOk = display = false;
 				}
@@ -770,47 +770,69 @@ public class App {
 	public void loadMovie(String fileName) {
 	    try {
 	        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+	        boolean alreadyAdded = false;
 	        String movieDetailsLine = reader.readLine();
 	        String[] movieDetails = movieDetailsLine.split(";");
 	        String movieName = movieDetails[0];
 	        String movieDirector = movieDetails[1];
-	        String movieReview = movieDetails[3];
-	        int movieYear = Integer.parseInt(movieDetails[2]);
 
-	        if (fileName.endsWith(".mvl")) {
-	            int movieStars = Integer.parseInt(movieDetails[4]);
-	            ArrayList<Performer> movieLiveActors = new ArrayList<>();
-	            String actorLine;
-	            while ((actorLine = reader.readLine()) != null) {
-	                String[] actorDetails = actorLine.split(";");
-	                String actorName = actorDetails[0];
-	                String actorSurname = actorDetails[1];
-	                movieLiveActors.add(new Performer(actorName, actorSurname));
+	        if (controlData.findMovieLive(movieName) == null) {
+	            int movieYear = Integer.parseInt(movieDetails[2]);
+	            String movieReview = movieDetails[3];
+
+	            if (fileName.endsWith(".mvl")) {
+	                int movieStars = Integer.parseInt(movieDetails[4]);
+	                ArrayList<Performer> movieLiveActors = loadActors(reader);
+	                controlData.addMovieLive(movieName, movieDirector, movieYear, movieReview, movieStars);
+	                databaseData.getActors().add(movieLiveActors);
+	            } else if (fileName.endsWith(".mva")) {
+	                int movieRating = Integer.parseInt(movieDetails[4]);
+	                int movieAge = Integer.parseInt(movieDetails[5]);
+	                ArrayList<Performer> movieAnimatedAnimators = loadAnimators(reader);
+	                controlData.addMovieAnimated(movieName, movieDirector, movieYear, movieReview, movieRating, movieAge);
+	                databaseData.getAnimators().add(movieAnimatedAnimators);
 	            }
-	            databaseData.getActors().add(movieLiveActors);
-	            controlData.addMovieLive(movieName, movieDirector, movieYear, movieReview, movieStars);
-	        } else if (fileName.endsWith(".mva")) {
-	            int movieRating = Integer.parseInt(movieDetails[4]);
-	            int movieAge = Integer.parseInt(movieDetails[5]);
-	            ArrayList<Performer> movieAnimatedAnimators = new ArrayList<>();
-	            String animatorLine;
-	            while ((animatorLine = reader.readLine()) != null) {
-	                String[] animatorDetails = animatorLine.split(";");
-	                String animatorName = animatorDetails[0];
-	                String animatorSurname = animatorDetails[1];
-	                movieAnimatedAnimators.add(new Performer(animatorName, animatorSurname));
-	            }
-	            controlData.addMovieAnimated(movieName, movieDirector, movieYear, movieReview, movieRating, movieAge);
-	            databaseData.getAnimators().add(movieAnimatedAnimators);
+	        } else {
+	            alreadyAdded = true;
 	        }
 
 	        reader.close();
-	        System.out.println("Successfully loaded movie '"+ movieName +"' from the file.");
+
+	        if (alreadyAdded) {
+	            System.out.println("Movie '" + movieName + "' loaded but not added.\n" + "It already is in the database!");
+	        } else {
+	            System.out.println("Successfully loaded movie '" + movieName + "' from the file.");
+	        }
 	    } catch (IOException e) {
-	        System.out.println("Could not load the movie.");
-	        e.printStackTrace();
+	        System.out.println("Could not load the movie.\n" + e.getMessage());
 	    }
 	}
+
+	private ArrayList<Performer> loadActors(BufferedReader reader) throws IOException {
+	    ArrayList<Performer> movieLiveActors = new ArrayList<>();
+	    String actorLine;
+	    while ((actorLine = reader.readLine()) != null) {
+	        String[] actorDetails = actorLine.split(";");
+	        String actorName = actorDetails[0];
+	        String actorSurname = actorDetails[1];
+	        movieLiveActors.add(new Performer(actorName, actorSurname));
+	    }
+	    return movieLiveActors;
+	}
+
+	private ArrayList<Performer> loadAnimators(BufferedReader reader) throws IOException {
+	    ArrayList<Performer> movieAnimatedAnimators = new ArrayList<>();
+	    String animatorLine;
+	    while ((animatorLine = reader.readLine()) != null) {
+	        String[] animatorDetails = animatorLine.split(";");
+	        String animatorName = animatorDetails[0];
+	        String animatorSurname = animatorDetails[1];
+	        movieAnimatedAnimators.add(new Performer(animatorName, animatorSurname));
+	    }
+	    return movieAnimatedAnimators;
+	}
+
+
 
 	private void movieSelectedEditPerformers(AbstractMovie movie) {
 		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");

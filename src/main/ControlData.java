@@ -36,24 +36,23 @@ public class ControlData {
 		return null;
 	}
 	
-	public int getMovieLiveIndex(MovieLive movie) {
-		return databaseData.getMoviesLive().indexOf(movie);
-	}
-	
-	public int getMovieAnimatedIndex(MovieAnimated movie) {
+	public int getMovieIndex(AbstractMovie movie) {
+		if (movie instanceof MovieLive) {
+			return databaseData.getMoviesLive().indexOf(movie);
+		}
 		return databaseData.getMoviesAnimated().indexOf(movie);
 	}
 	
 	public boolean deleteMovieLive(MovieLive movie) {
 		if (movie == null) {return false;}
-		if ((databaseData.getActors().remove(getMovieLiveIndex(movie))) == null) {return false;}
+		if ((databaseData.getActors().remove(getMovieIndex(movie))) == null) {return false;}
 		if (!databaseData.getMoviesLive().remove(movie)) {return false;}
 		return true;
 	}
 	
 	public boolean deleteMovieAnimated(MovieAnimated movie) {
 		if (movie == null) {return false;}
-		if ((databaseData.getAnimators().remove(getMovieAnimatedIndex(movie))) == null) {return false;}
+		if ((databaseData.getAnimators().remove(getMovieIndex(movie))) == null) {return false;}
 		if (!databaseData.getMoviesAnimated().remove(movie)) {return false;}
 		return true;
 	}
@@ -79,23 +78,23 @@ public class ControlData {
 	}
 	public boolean hasMovieAnyPerformers(AbstractMovie movie) {
 		if (movie instanceof MovieLive) {
-			ArrayList<Performer> performers = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
+			ArrayList<Performer> performers = databaseData.getActors().get(getMovieIndex((MovieLive)movie));
 			if (performers == null || performers.isEmpty()) {return false;}
 			return true;
 		}
-		ArrayList<Performer> performers = databaseData.getAnimators().get(getMovieAnimatedIndex((MovieAnimated)movie));
+		ArrayList<Performer> performers = databaseData.getAnimators().get(getMovieIndex((MovieAnimated)movie));
 		if (performers == null || performers.isEmpty()) {return false;}
 		return true;
 	}
 	
 	public boolean deleteMoviePerformers(AbstractMovie movie) {
 		if (movie instanceof MovieLive) {
-			ArrayList<Performer> performersToDelete = databaseData.getActors().get(getMovieLiveIndex((MovieLive)movie));
+			ArrayList<Performer> performersToDelete = databaseData.getActors().get(getMovieIndex((MovieLive)movie));
 			if (performersToDelete == null || performersToDelete.isEmpty()) {return false;}
 			performersToDelete.clear();
 			return true;
 		}
-		ArrayList<Performer> performersToDelete = databaseData.getAnimators().get(getMovieAnimatedIndex((MovieAnimated)movie));
+		ArrayList<Performer> performersToDelete = databaseData.getAnimators().get(getMovieIndex((MovieAnimated)movie));
 		if (performersToDelete == null || performersToDelete.isEmpty()) {return false;}
 		performersToDelete.clear();
 		return true;
@@ -122,11 +121,11 @@ public class ControlData {
     }
     
     public ArrayList<Performer> getMovieLiveActors(MovieLive movie) {
-    	return databaseData.getActors().get(getMovieLiveIndex(movie));
+    	return databaseData.getActors().get(getMovieIndex(movie));
     }
     
     public ArrayList<Performer> getMovieAnimatedAnimators(MovieAnimated movie) {
-    	return databaseData.getAnimators().get(getMovieAnimatedIndex(movie));
+    	return databaseData.getAnimators().get(getMovieIndex(movie));
     }
     
     public ArrayList<Performer> getMovieLiveActors(int index) {
