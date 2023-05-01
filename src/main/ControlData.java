@@ -43,39 +43,44 @@ public class ControlData {
 		return databaseData.getMoviesAnimated().indexOf(movie);
 	}
 	
-	public boolean deleteMovieLive(MovieLive movie) {
+	public boolean deleteMovie(AbstractMovie movie) {
 		if (movie == null) {return false;}
-		if ((databaseData.getActors().remove(getMovieIndex(movie))) == null) {return false;}
-		if (!databaseData.getMoviesLive().remove(movie)) {return false;}
-		return true;
-	}
-	
-	public boolean deleteMovieAnimated(MovieAnimated movie) {
-		if (movie == null) {return false;}
+		if (movie instanceof MovieLive) {
+			if ((databaseData.getActors().remove(getMovieIndex(movie))) == null) {return false;}
+			if (!databaseData.getMoviesLive().remove(movie)) {return false;}
+			return true;
+		}
 		if ((databaseData.getAnimators().remove(getMovieIndex(movie))) == null) {return false;}
 		if (!databaseData.getMoviesAnimated().remove(movie)) {return false;}
 		return true;
 	}
 	
-	public boolean addMovieLiveActor(int movieIndex, String name, String surname) {
-		if (findPerformer(databaseData.getActors().get(movieIndex), name, surname) != null) {return false;}
-		databaseData.getActors().get(movieIndex).add(new Performer(name, surname));
+	public boolean addMoviePerformer(AbstractMovie movie, String name, String surname) {
+		int movieIndex = getMovieIndex(movie);
+		if (movie instanceof MovieLive) {
+			if (findPerformer(databaseData.getActors().get(movieIndex), name, surname) != null) {return false;}
+			databaseData.getActors().get(movieIndex).add(new Performer(name, surname));
+			return true;
+		}
+		if (findPerformer(databaseData.getAnimators().get(movieIndex), name, surname) != null) {return false;}
+		databaseData.getAnimators().get(movieIndex).add(new Performer(name, surname));
 		return true;
 	}
 	
-	public boolean deleteMovieLiveActor(int movieIndex, String name, String surname) {
-		Performer performerToDelete = findPerformer(databaseData.getActors().get(movieIndex), name, surname);
-		if (performerToDelete == null) {return false;}
-		databaseData.getActors().get(movieIndex).remove(performerToDelete);
-		return true;
-	}
-	
-	public boolean deleteMovieAnimatedAnimator(int movieIndex, String name, String surname) {
+	public boolean deleteMoviePerformer(AbstractMovie movie, String name, String surname) {
+		int movieIndex = getMovieIndex(movie);
+		if (movie instanceof MovieLive) {
+			Performer performerToDelete = findPerformer(databaseData.getActors().get(movieIndex), name, surname);
+			if (performerToDelete == null) {return false;}
+			databaseData.getActors().get(movieIndex).remove(performerToDelete);
+			return true;
+		}
 		Performer performerToDelete = findPerformer(databaseData.getAnimators().get(movieIndex), name, surname);
 		if (performerToDelete == null) {return false;}
 		databaseData.getAnimators().get(movieIndex).remove(performerToDelete);
 		return true;
 	}
+	
 	public boolean hasMovieAnyPerformers(AbstractMovie movie) {
 		if (movie instanceof MovieLive) {
 			ArrayList<Performer> performers = databaseData.getActors().get(getMovieIndex((MovieLive)movie));
@@ -100,11 +105,6 @@ public class ControlData {
 		return true;
 	}
 	
-	public boolean addMovieAnimatedAnimator(int movieIndex, String name, String surname) {
-		if (findPerformer(databaseData.getAnimators().get(movieIndex), name, surname) != null) {return false;}
-		databaseData.getAnimators().get(movieIndex).add(new Performer(name, surname));
-		return true;
-	}
 	
     public boolean addMovieLive(String name, String director, int year, String review, int stars) {
     	if (findMovieLive(name) != null) {return false;}
@@ -120,20 +120,12 @@ public class ControlData {
     	return true;
     }
     
-    public ArrayList<Performer> getMovieLiveActors(MovieLive movie) {
-    	return databaseData.getActors().get(getMovieIndex(movie));
-    }
     
-    public ArrayList<Performer> getMovieAnimatedAnimators(MovieAnimated movie) {
+    public ArrayList<Performer> getMoviePerformers(AbstractMovie movie) {
+    	if (movie instanceof MovieLive) {
+    		return databaseData.getActors().get(getMovieIndex(movie));
+    	}
     	return databaseData.getAnimators().get(getMovieIndex(movie));
-    }
-    
-    public ArrayList<Performer> getMovieLiveActors(int index) {
-    	return databaseData.getActors().get(index);
-    }
-    
-    public ArrayList<Performer> getMovieAnimatedAnimators(int index) {
-    	return databaseData.getAnimators().get(index);
     }
     
     public ArrayList<MovieAnimated> animatorStarrs(String name, String surname) {

@@ -140,13 +140,7 @@ public class App {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append((movie instanceof MovieLive) ? "Actors:" + separator : "Animators:" + separator);
 	    ArrayList<Performer> performers;
-	    if (movie instanceof MovieLive) {
-	        MovieLive movieLive = (MovieLive) movie;
-	        performers = controlData.getMovieLiveActors(movieLive);
-	    } else {
-	        MovieAnimated movieAnimated = (MovieAnimated) movie;
-	        performers = controlData.getMovieAnimatedAnimators(movieAnimated);
-	    }
+	    performers = controlData.getMoviePerformers(movie);
 	    for (Performer performer : performers) {
 	        sb.append(performer.getName()).append(" ").append(performer.getSurname()).append(",").append(separator);
 	    }
@@ -287,141 +281,6 @@ public class App {
 		}
 	}
 	
-	private void addPerformer(AbstractMovie movie) {
-		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
-		boolean display = true;
-		boolean inputOk = false;
-		while (!inputOk) {
-			if (display) {
-			System.out.println(
-					"\n< Adding a new " + performerType +" >\n" +
-					"Enter the " + performerType + " in following format:\n" +
-					"Name ; Surname\n" +
-					"Use ';' to separate it's atributes.\n" +
-					"Enter '.' to return."
-					);
-			}
-			display = true;
-			String[] performerInput = scanner.nextLine().split(";");
-			if (performerInput.length > 0) {
-				if (performerInput[0].strip().length() > 0) {
-					if (performerInput[0].strip().charAt(0) == '.') {return;}
-				}
-			}
-			if (performerInput.length >= 2) {
-				String performerName = performerInput[0].strip();
-				String performerSurname = performerInput[1].strip();
-				
-				inputOk = true;
-				
-				if (performerName.length() < 1 || performerName.length() > 64) {
-					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
-					inputOk = display = false;
-				}
-				
-				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
-					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
-					inputOk = display = false;
-				}
-
-				if (inputOk) {
-					if (movie instanceof MovieLive) {
-						if (controlData.addMovieLiveActor(
-								controlData.getMovieIndex((MovieLive)movie), performerName, performerSurname)) {
-							System.out.println("New " + performerType + " added successfully.");
-						}
-						else {
-							System.out.println("Could not add a new  "+ performerType +".\n" +
-									"They are already added.");
-						}
-					}
-					else {
-						if (controlData.addMovieAnimatedAnimator(
-								controlData.getMovieIndex((MovieAnimated)movie), performerName, performerSurname)) {
-							System.out.println("New " + performerType + " added successfully.");
-						}
-						else {
-							System.out.println("Could not add a new  "+ performerType +".\n" +
-									"They are already added.");
-						}
-					}
-						
-				}
-			}
-			else {
-				System.out.println("Invalid input. Please try again.");
-				display = false;
-			}
-		}
-	}
-	
-	private void deletePerformer(AbstractMovie movie) {
-		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
-		boolean display = true;
-		boolean inputOk = false;
-		while (!inputOk) {
-			if (display) {
-			System.out.println(
-					"\n< Deleting " + performerType +" >\n" +
-					"Enter the " + performerType + " in following format:\n" +
-					"Name ; Surname\n" +
-					"Use ';' to separate it's atributes.\n" +
-					"Enter '.' to return."
-					);
-			}
-			display = true;
-			String[] performerInput = scanner.nextLine().split(";");
-			if (performerInput.length > 0) {
-				if (performerInput[0].strip().length() > 0) {
-					if (performerInput[0].strip().charAt(0) == '.') {return;}
-				}
-			}
-			if (performerInput.length >= 2) {
-				String performerName = performerInput[0].strip();
-				String performerSurname = performerInput[1].strip();
-				
-				inputOk = true;
-				
-				if (performerName.length() < 1 || performerName.length() > 64) {
-					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
-					inputOk = display = false;
-				}
-				
-				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
-					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
-					inputOk = display = false;
-				}
-
-				if (inputOk) {
-					if (movie instanceof MovieLive) {
-						if (controlData.deleteMovieLiveActor(
-								controlData.getMovieIndex((MovieLive)movie), performerName, performerSurname)) {
-							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
-						}
-						else {
-							System.out.println("Could not delete "+ performerType +".\n" +
-									"They are not added.");
-						}
-					}
-					else {
-						if (controlData.addMovieAnimatedAnimator(
-								controlData.getMovieIndex((MovieAnimated)movie), performerName, performerSurname)) {
-							System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
-						}
-						else {
-							System.out.println("Could not delete "+ performerType +".\n" +
-									"They are not added.");
-						}
-					}	
-				}
-			}
-			else {
-				System.out.println("Invalid input. Please try again.");
-				display = false;
-			}
-		}
-	}
-	
 	private void addMovieAnimated() {
 		boolean display = true;
 		boolean inputOk = false;
@@ -514,6 +373,116 @@ public class App {
 			}
 		}
 	}
+	
+	private void addPerformer(AbstractMovie movie) {
+		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+			System.out.println(
+					"\n< Adding a new " + performerType +" >\n" +
+					"Enter the " + performerType + " in following format:\n" +
+					"Name ; Surname\n" +
+					"Use ';' to separate it's atributes.\n" +
+					"Enter '.' to return."
+					);
+			}
+			display = true;
+			String[] performerInput = scanner.nextLine().split(";");
+			if (performerInput.length > 0) {
+				if (performerInput[0].strip().length() > 0) {
+					if (performerInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (performerInput.length >= 2) {
+				String performerName = performerInput[0].strip();
+				String performerSurname = performerInput[1].strip();
+				
+				inputOk = true;
+				
+				if (performerName.length() < 1 || performerName.length() > 64) {
+					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+				
+				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
+					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+
+				if (inputOk) {
+					if (controlData.addMoviePerformer(movie, performerName, performerSurname)) {
+						System.out.println("New " + performerType + " added successfully.");
+					}
+					else {
+						System.out.println("Could not add a new  "+ performerType +".\n" +
+								"They are already added.");
+					}
+						
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+				display = false;
+			}
+		}
+	}
+	
+	private void deletePerformer(AbstractMovie movie) {
+		String performerType = ((movie instanceof MovieLive) ? "Actor" : "Animator");
+		boolean display = true;
+		boolean inputOk = false;
+		while (!inputOk) {
+			if (display) {
+			System.out.println(
+					"\n< Deleting " + performerType +" >\n" +
+					"Enter the " + performerType + " in following format:\n" +
+					"Name ; Surname\n" +
+					"Use ';' to separate it's atributes.\n" +
+					"Enter '.' to return."
+					);
+			}
+			display = true;
+			String[] performerInput = scanner.nextLine().split(";");
+			if (performerInput.length > 0) {
+				if (performerInput[0].strip().length() > 0) {
+					if (performerInput[0].strip().charAt(0) == '.') {return;}
+				}
+			}
+			if (performerInput.length >= 2) {
+				String performerName = performerInput[0].strip();
+				String performerSurname = performerInput[1].strip();
+				
+				inputOk = true;
+				
+				if (performerName.length() < 1 || performerName.length() > 64) {
+					System.out.println(performerType + "'s name length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+				
+				if (performerSurname.length() < 1 || performerSurname.length() > 64) {
+					System.out.println(performerType + "'s surname length must be from 1 to 64 characters.");
+					inputOk = display = false;
+				}
+
+				if (inputOk) {
+					if (controlData.deleteMoviePerformer(movie, performerName, performerSurname)) {
+						System.out.println(performerType + " '" + performerName + " " + performerSurname +"' deleted successfully.");
+					}
+					else {
+						System.out.println("Could not delete "+ performerType +".\n" +
+								"They are not added.");
+					}
+				}
+			}
+			else {
+				System.out.println("Invalid input. Please try again.");
+				display = false;
+			}
+		}
+	}
+	
 
 	private void searchMovieMenu() {
 		boolean display = true;
@@ -738,15 +707,14 @@ public class App {
 	        .append(movie.getDirector()).append(";")
 	        .append(movie.getYear()).append(";")
 	        .append(movie.getReview()).append(";");
+	    moviePerformers = controlData.getMoviePerformers(movie);
 	    if (movie instanceof MovieLive) {
 	        MovieLive movieLive = (MovieLive) movie;
 	        movieDetails.append(movieLive.getStars());
-	        moviePerformers = controlData.getMovieLiveActors((MovieLive)movie);
 	    } else {
 	        MovieAnimated movieAnimated = (MovieAnimated) movie;
 	        movieDetails.append(movieAnimated.getRating()).append(";")
 	            .append(movieAnimated.getAge());
-	        moviePerformers = controlData.getMovieAnimatedAnimators((MovieAnimated)movie);
 	    }
 	    if (moviePerformers != null && !moviePerformers.isEmpty()) {
 	    	for (var performer : moviePerformers) {
@@ -1069,14 +1037,7 @@ public class App {
 		        return false;
 		    case 1:
 		    	String name = movie.getName();
-		    	if (movie instanceof MovieLive) {
-		    		MovieLive liveMovie = (MovieLive)movie;
-		    		controlData.deleteMovieLive(liveMovie);
-		    	}
-		    	else {
-		    		MovieAnimated MovieAnimated = (MovieAnimated)movie;
-		    		controlData.deleteMovieAnimated(MovieAnimated);
-		    	}
+		    	controlData.deleteMovie(movie);
 		    	System.out.println("Movie '" + name + "' deleted successfuly.");
 		    	return true;
 		    default:
